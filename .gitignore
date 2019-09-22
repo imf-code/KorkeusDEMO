@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Korkeusdata DEMO/.vs/Korkeusdata DEMO
+/Korkeusdata DEMO/Korkeusdata DEMO/bin/Debug/netcoreapp2.1
+/Korkeusdata DEMO/Korkeusdata DEMO/obj
