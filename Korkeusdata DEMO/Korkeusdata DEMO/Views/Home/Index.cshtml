@@ -2,11 +2,16 @@
     ViewData["Title"] = "Korkeus DEMO";
 }
 
-    <script src="~/js/ClientDraw.js"></script>
+<script src="~/js/ClientDraw.js"></script>
 
+<h1></h1>
+
+<canvas id="mapPicture" width="0" height="0"></canvas>
+
+<p id="loadFileFromHDD">
+    Lataa korkeusdata kovalevyltä (.asc -tiedosto).
     <input type="file" id="mapFile" />
     <br /><br />
-    <input type="button" onclick="ReadIt()" value="Submit" />
+    <input type="button" onclick="ReadTheForm()" value="Submit" />
     <br />
-
-    <canvas id="mapPicture" width="2400" height="1200"></canvas>
+</p>

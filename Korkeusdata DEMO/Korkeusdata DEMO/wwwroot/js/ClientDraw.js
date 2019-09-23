@@ -1,128 +1,96 @@
-// JavaScript source code
-//Various variables
-//var rawData; //not used atm
-var strData = "";
-var mapArray;
+//Draws a picture from height data, client side only
 
-// JavaScript source code
-function ReadIt() {
+var dataString = "";
+var mapArray = null;
+var canvasWidth = 0;
+var canvasHeight = 0;
+var noDataValue = 0;
 
-    //Read data from form
-    var file = document.getElementById('mapFile').files[0];
-    var reader = new FileReader();
+function ReadTheForm() {
+
+    //Read form data to string
+    console.log("Reading the file...");
+    let file = document.getElementById('mapFile').files[0];
+    let reader = new FileReader();
     reader.onload = () => {
-        strData = event.target.result;
-        DoIt();
+        dataString = event.target.result;
+        console.log("Done.");
+        ParseTheData();
+    }
+    reader.onerror = () => {
+        console.log("Error opening the file. Invalid file type?");
+        return;
     }
     reader.readAsText(file);
 }
 
-function DoIt() {
-    //Read numbers from data to string
-    var numOnly = strData.slice(157);
+function ParseTheData() {
 
+    //Read necessary metadata from the string data
+    try {
+        console.log("Reading metadata...");
+        canvasWidth = dataString.match(/(?<=ncols\s*)\d+/);
+        canvasHeight = dataString.match(/(?<=nrows\s*)\d+/);
+        noDataValue = dataString.match(/(?<=NODATA_value\s*)-?\d*\.\d+/);
+        let findTheMatrixRegex = new RegExp("(?<=" + noDataValue.toString() + "\\s*)-?\\d+");
+        let indexOfMatrix = dataString.search(findTheMatrixRegex);
+        var numberMatrixOnly = dataString.slice(indexOfMatrix);
+        console.log("Done.");
+    }
+    catch (err) {
+        console.log("Error parsing the string! Not a valid file format?");
+        return;
+    }
 
     //Turn into an array
     console.log("Converting to array...");
-    mapArray = numOnly.split(" ");
+    numberMatrixOnly = numberMatrixOnly.replace(/\0D?\x0A/g, "");
+    mapArray = numberMatrixOnly.split(" ");
     mapArray.pop();
     console.log("Done.");
-
-    /*Turn into 2d string array
-    console.log("Converting to 2d array...");
-    mapArray = numOnly.split("\n")
-    for (let i = 0; i < mapArray.length; i++) {
-        mapArray[i] = mapArray[i].split(" ");
-    }
-    mapArray.pop();
-    console.log("Done.");
-    */
-
 
     //Convert to float
     console.log("Converting to float...");
-    function IntoFloat(item, index, arr) {
+    mapArray.forEach((item, index, arr) => {
         arr[index] = parseFloat(item);
-    }
-    mapArray.forEach(IntoFloat);
+    });
     console.log("Done.");
 
-    /*Convert 2d into float
-    console.log("Converting to float...");
-    function IntoFloat(item, index, arr) {
-        arr[index] = parseFloat(item);
-    }
+    CreateMapCanvas();
+}
 
-    function DIntoFloat(item, index, arr) {
-        arr[index].forEach(IntoFloat);
-    }
-
-    mapArray.forEach(DIntoFloat);
-    console.log("Done.");
-    */
-
-
-    /*Write boolMap
-    console.log("Creating boolMap...")
-    var boolMap = new Array(mapArray.length);
-    for (let row = 0; row < mapArray.length; row++) {
-        boolMap[row] = [];
-        for (let column = 0; column < mapArray[row].length; column++) {
-            if (mapArray[row][column] > 0) {
-                boolMap[row][column] = 1;
-            }
-            else {
-                boolMap[row][column] = 0;
-            }
-        }
-        //mapArray[row].push("\n");
-    }
-    console.log("Done.");
-    */
-
-    /*
-    //Make canvas
-    console.log("Creating canvas...");
-    var mapCanvas = document.getElementById("mapPicture");
-    var mapContext = mapCanvas.getContext("2d");
-
-    for (let i = 0; i < boolMap.length; i++)
-
-    console.log("Done.");
-    */
-
+function CreateMapCanvas() {
 
     //Calculate RGB values
-    console.log("Preparing to calculate RGB values...")
+    console.log("Calculating RGB values...")
     var minValue = getMin(mapArray);
     var maxValue = getMax(mapArray);
-    var mapRange = -minValue + maxValue;
+    var mapRange = maxValue - minValue;
 
-    console.log("Calculating RGB values...");
-    function ForEachToRGB(item, index, arr) {
-        arr[index] = ((-minValue + item) / mapRange)  * 255;
-    }
-    mapArray.forEach(ForEachToRGB);
+    mapArray.forEach((item, index, arr) => {
+        arr[index] = ((item - minValue) / mapRange) * 255;
+    });
    
-    console.log("Converting to int for RGB...")
-    function ToIntForRGB(item, index, arr) {
+    mapArray.forEach((item, index, arr) => {
         arr[index] = Math.round(item);
-    }
-    mapArray.forEach(ToIntForRGB);
-
+    });
     console.log("Done.");
     
 
     //Create canvas imagedata
+    console.log("Drawing the image...");
     var mapCanvas = document.getElementById("mapPicture");
     var mapContext = mapCanvas.getContext("2d");
 
-    var mapData = mapContext.createImageData(2400, 1200);
+    document.getElementById("mapPicture").width = canvasWidth;
+    document.getElementById("mapPicture").height = canvasHeight;
+    var mapData = mapContext.createImageData(canvasWidth, canvasHeight);
 
     var colorR = 0;
     var colorG = 0;
     var colorB = mapArray;
     var colorA = 255;
+
     for (let i = 0; i < mapArray.length; i++) {
         let n = i * 4;
         mapData.data[n] = colorR;
@@ -130,32 +98,25 @@ function DoIt() {
         mapData.data[n + 2] = colorB[i];
         mapData.data[n + 3] = colorA;
     }
+    console.log("Done.");
 
 
     //Draw to canvas
     mapContext.putImageData(mapData, 0, 0);
-    
-
-    //PrintIt();
 }
 
-/*
+
+//Print to console for debugging
 function PrintIt() {
-    //Print an array to console
-    var targetVar = mapArray;
-    console.log(...targetVar);
-
-    /*Print 2d
-    for (let row = 0; row < targetVar.length; row++) {
-        //printOut = boolMap[row].join("");
-
-        console.log(...targetVar[row]); //Direct print (slow?)
+    for (let i = 0; i < mapArray.length; i++) {
+    console.log(mapArray[i]);
     }
-
+    console.log(canvasWidth + canvasHeight);
+    console.log(noDataValue.toString());
 }
-*/
 
-//Min/Max functions for large data
+
+//Min/max functions for more data than Math.max/min can handle
 //Taken from: 
 //https://stackoverflow.com/questions/42623071/maximum-call-stack-size-exceeded-with-math-min-and-math-max
 function getMax(arr) {
