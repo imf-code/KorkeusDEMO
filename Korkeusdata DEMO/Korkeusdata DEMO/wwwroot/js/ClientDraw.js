@@ -4,12 +4,17 @@ var dataString = "";
 var mapArray = null;
 var canvasWidth = 0;
 var canvasHeight = 0;
-var noDataValue = 0;
+var noDataValue = null;
 
 function ReadTheForm() {
 
-    //Read form data to string
+    //Confirm file extension and read form data to string
     console.log("Reading the file...");
+    let filePath = document.getElementById('mapFile').value;
+    if (!filePath.endsWith(".asc")) {
+        console.log("Error opening the file: Invalid file extension, .asc expected.");
+        return;
+    }
     let file = document.getElementById('mapFile').files[0];
     let reader = new FileReader();
     reader.onload = () => {
@@ -18,7 +23,7 @@ function ReadTheForm() {
         ParseTheData();
     }
     reader.onerror = () => {
-        console.log("Error opening the file. Invalid file type?");
+        console.log("Error opening the file: Cannot read file.");
         return;
     }
     reader.readAsText(file);
@@ -26,28 +31,44 @@ function ReadTheForm() {
 
 function ParseTheData() {
 
-    //Read necessary metadata from the string data
+    //Read necessary metadata from the string data, error if not able or not found
     try {
         console.log("Reading metadata...");
         canvasWidth = dataString.match(/(?<=ncols\s*)\d+/);
+        if (canvasWidth == null) {
+            console.log("Error reading the data: Unknown format.");
+            return;
+        }
         canvasHeight = dataString.match(/(?<=nrows\s*)\d+/);
+        if (canvasHeight == null) {
+            console.log("Error reading the data: Unknown format.");
+            return;
+        }
         noDataValue = dataString.match(/(?<=NODATA_value\s*)-?\d*\.\d+/);
+        if (noDataValue == null) {
+            console.log("Error reading the data: Unknown format.");
+            return;
+        }
         let findTheMatrixRegex = new RegExp("(?<=" + noDataValue.toString() + "\\s*)-?\\d+");
         let indexOfMatrix = dataString.search(findTheMatrixRegex);
         var numberMatrixOnly = dataString.slice(indexOfMatrix);
         console.log("Done.");
     }
     catch (err) {
-        console.log("Error parsing the string! Not a valid file format?");
+        console.log("Error parsing the string: Not a valid file format?");
         return;
     }
 
-    //Turn into an array
+    //Turn into an array, check if array is correct size
     console.log("Converting to array...");
-    numberMatrixOnly = numberMatrixOnly.replace(/\0D?\x0A/g, "");
+    numberMatrixOnly = numberMatrixOnly.replace(/\x0D?\x0A/g, "");
     mapArray = numberMatrixOnly.split(" ");
-    mapArray.pop();
     console.log("Done.");
+
+    if (mapArray.length != canvasHeight * canvasWidth) {
+        console.log("Error: Unexpected map size.");
+        return;
+    }
 
     //Convert to float
     console.log("Converting to float...");
@@ -77,7 +98,7 @@ function CreateMapCanvas() {
     console.log("Done.");
     
 
-    //Create canvas imagedata
+    //Create canvas imagedata and draw the map on it
     console.log("Drawing the image...");
     var mapCanvas = document.getElementById("mapPicture");
     var mapContext = mapCanvas.getContext("2d");
