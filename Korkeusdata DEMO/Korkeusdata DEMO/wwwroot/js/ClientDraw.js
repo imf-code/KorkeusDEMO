@@ -8,16 +8,24 @@ var canvasHeight = null;
 var noDataValue = null
 
 function OnSubmit() {
-    ReadSettings();
     ReadTheForm();
+    ReadSettings();
 }
 
+/*
+function ColorTheMap() {
+    ParseTheData();
+    CreateMapCanvas();
+}
+*/
+
 function ReadSettings() {
+
+    //Read settings from index
     let readColoringSettings = document.getElementsByName("coloring");
     for (let i = 0; i < readColoringSettings.length; i++) {
         if (readColoringSettings[i].checked) {
             colorSetting = readColoringSettings[i].value;
-            console.log(colorSetting);
         }
     }
 }
@@ -37,6 +45,7 @@ function ReadTheForm() {
     reader.onload = () => {
         dataString = event.target.result;
         console.log("Done.");
+        //ColorTheMap();
         ParseTheData();
     }
     reader.onerror = () => {
@@ -110,12 +119,12 @@ function CreateMapCanvas() {
     elevationData.forEach((item, index, arr) => {
         arr[index] = ((item - minValue) / mapRange) * 255;
     });
-   
+
     elevationData.forEach((item, index, arr) => {
         arr[index] = Math.round(item);
     });
     console.log("Done.");
-    
+
     //Create canvas imagedata and draw the map on it
     console.log("Drawing the image...");
     let mapCanvas = document.getElementById("mapPicture");
@@ -125,34 +134,44 @@ function CreateMapCanvas() {
     document.getElementById("mapPicture").height = canvasHeight;
     var mapImageData = mapContext.createImageData(canvasWidth, canvasHeight);
 
+    var colorR = 0;
+    var colorG = 0;
+    var colorB = 0;
+    var colorA = 255;
+
+    var waterLevel = null;
+    if (minValue < 0) {
+        waterLevel = ((0 - minValue) / mapRange) * 255;
+    }
+    else {
+        return;
+    }
+
     switch (colorSetting) {
-        case "blue": {
-            var colorR = 0;
-            var colorG = 0;
-            var colorB = elevationData;
-            var colorA = 255;
+        case "blue":
+            colorB = elevationData;
             break;
-        }
-        case "redAndBlue": {
-            var colorR = 0;
-            var colorG = 0;
-            var colorB = elevationData;
-            var colorA = 255;
+
+        case "redAndBlue":
+            colorR = elevation;
+            colorB = elevationData;
             break;
-        }
+
+        default:
+            break;
     }
 
     for (let i = 0; i < elevationData.length; i++) {
         let n = i * 4;
-        mapImageData.data[n] = colorR;
-        mapImageData.data[n + 1] = colorG;
-        mapImageData.data[n + 2] = colorB[i];
+        mapImageData.data[n] = colorR === 0 ? colorR : elevationData[i];
+        mapImageData.data[n + 1] = colorG === 0 ? colorG : elevationData[i];
+        mapImageData.data[n + 2] = colorB === 0 ? colorG : elevationData[i];
         mapImageData.data[n + 3] = colorA;
     }
     console.log("Done.");
 
     //Draw imagedata to canvas
-    mapContext.putImageData(mapImageData, 0, 0);
+    mapContext.putImageData(mapImageData, 0, 0); 
 }
 
 //Min/max functions for more data than Math.max/min can handle, used in CreateMapCanvas()
