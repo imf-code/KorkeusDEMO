@@ -1,9 +1,26 @@
 //Draws a picture from numerical elevation data, client side only
 
+var dataString = null;
 var elevationData = null;
+var colorSetting = null;
 var canvasWidth = null;
 var canvasHeight = null;
-var noDataValue = null;
+var noDataValue = null
+
+function OnSubmit() {
+    ReadSettings();
+    ReadTheForm();
+}
+
+function ReadSettings() {
+    let readColoringSettings = document.getElementsByName("coloring");
+    for (let i = 0; i < readColoringSettings.length; i++) {
+        if (readColoringSettings[i].checked) {
+            colorSetting = readColoringSettings[i].value;
+            console.log(colorSetting);
+        }
+    }
+}
 
 function ReadTheForm() {
 
@@ -18,7 +35,7 @@ function ReadTheForm() {
     let file = document.getElementById('mapFile').files[0];
     let reader = new FileReader();
     reader.onload = () => {
-        elevationData = event.target.result;
+        dataString = event.target.result;
         console.log("Done.");
         ParseTheData();
     }
@@ -34,17 +51,17 @@ function ParseTheData() {
     //Read necessary metadata from the string, error if not able or metadata not found
     try {
         console.log("Reading metadata...");
-        canvasWidth = elevationData.match(/(?<=^ncols\s*)\d+/);
+        canvasWidth = dataString.match(/(?<=^ncols\s*)\d+/);
         if (canvasWidth == null) {
             console.log("Error reading the data: Unknown format.");
             return;
         }
-        canvasHeight = elevationData.match(/(?<=nrows\s*)\d+/);
+        canvasHeight = dataString.match(/(?<=nrows\s*)\d+/);
         if (canvasHeight == null) {
             console.log("Error reading the data: Unknown format.");
             return;
         }
-        noDataValue = elevationData.match(/(?<=NODATA_value\s*)-?\d*\.\d+/);
+        noDataValue = dataString.match(/(?<=NODATA_value\s*)-?\d*\.\d+/);
         if (noDataValue == null) {
             console.log("Error reading the data: Unknown format.");
             return;
@@ -52,8 +69,8 @@ function ParseTheData() {
 
         //Separate elevation data from metadata, only numbers should remain
         let findTheMatrixRegex = new RegExp("(?<=" + noDataValue.toString() + "\\s*)-?\\d+");
-        let indexOfMatrix = elevationData.search(findTheMatrixRegex);
-        elevationData = elevationData.slice(indexOfMatrix);
+        let indexOfMatrix = dataString.search(findTheMatrixRegex);
+        elevationData = dataString.slice(indexOfMatrix);
         console.log("Done.");
     }
     catch (err) {
@@ -108,10 +125,22 @@ function CreateMapCanvas() {
     document.getElementById("mapPicture").height = canvasHeight;
     var mapImageData = mapContext.createImageData(canvasWidth, canvasHeight);
 
-    let colorR = 0;
-    let colorG = 0;
-    let colorB = elevationData;
-    let colorA = 255;
+    switch (colorSetting) {
+        case "blue": {
+            var colorR = 0;
+            var colorG = 0;
+            var colorB = elevationData;
+            var colorA = 255;
+            break;
+        }
+        case "redAndBlue": {
+            var colorR = 0;
+            var colorG = 0;
+            var colorB = elevationData;
+            var colorA = 255;
+            break;
+        }
+    }
 
     for (let i = 0; i < elevationData.length; i++) {
         let n = i * 4;

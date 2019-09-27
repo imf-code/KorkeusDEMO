@@ -16,6 +16,9 @@
     Avaa korkeusdata kovalevyltä (.asc -tiedosto).
     <input type="file" id="mapFile" />
     <br /><br />
-    <input type="button" onclick="ReadTheForm()" value="Piirrä kartta" />
+    <input type="radio" name="coloring" value="blue" checked="checked"/> Yksivärinen sininen<br />
+    <input type="radio" name="coloring" value="redAndBlue" /> Merenpinnan alapuoleiset punaisella<br />
+    <br />
+    <input type="button" onclick="OnSubmit()" value="Piirrä kartta" />
     <br />
 </p>
