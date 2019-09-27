@@ -1,14 +1,14 @@
-//Draws a picture from height data, client side only
+//Draws a picture from elevation data, client side only
 
 var dataString = "";
 var mapArray = null;
-var canvasWidth = 0;
-var canvasHeight = 0;
+var canvasWidth = null;
+var canvasHeight = null;
 var noDataValue = null;
 
 function ReadTheForm() {
 
-    //Confirm file extension and read form data to string
+    //Confirm file extension and read the data as text to string
     console.log("Reading the file...");
     let filePath = document.getElementById('mapFile').value;
     if (!filePath.endsWith(".asc")) {
@@ -31,10 +31,10 @@ function ReadTheForm() {
 
 function ParseTheData() {
 
-    //Read necessary metadata from the string data, error if not able or not found
+    //Read necessary metadata from the string, error if not able or metadata not found
     try {
         console.log("Reading metadata...");
-        canvasWidth = dataString.match(/(?<=ncols\s*)\d+/);
+        canvasWidth = dataString.match(/(?<=^ncols\s*)\d+/);
         if (canvasWidth == null) {
             console.log("Error reading the data: Unknown format.");
             return;
@@ -49,17 +49,18 @@ function ParseTheData() {
             console.log("Error reading the data: Unknown format.");
             return;
         }
+
         let findTheMatrixRegex = new RegExp("(?<=" + noDataValue.toString() + "\\s*)-?\\d+");
         let indexOfMatrix = dataString.search(findTheMatrixRegex);
         var numberMatrixOnly = dataString.slice(indexOfMatrix);
         console.log("Done.");
     }
     catch (err) {
-        console.log("Error parsing the string: Not a valid file format?");
+        console.log("Error parsing the string.");
         return;
     }
 
-    //Turn into an array, check if array is correct size
+    //Turn into an array, check if array size matches metadata
     console.log("Converting to array...");
     numberMatrixOnly = numberMatrixOnly.replace(/\x0D?\x0A/g, "");
     mapArray = numberMatrixOnly.split(" ");
@@ -82,11 +83,11 @@ function ParseTheData() {
 
 function CreateMapCanvas() {
 
-    //Calculate RGB values
+    //Calculate RGB values based on the range of elevations
     console.log("Calculating RGB values...")
-    var minValue = getMin(mapArray);
-    var maxValue = getMax(mapArray);
-    var mapRange = maxValue - minValue;
+    let minValue = getMin(mapArray);
+    let maxValue = getMax(mapArray);
+    let mapRange = maxValue - minValue;
 
     mapArray.forEach((item, index, arr) => {
         arr[index] = ((item - minValue) / mapRange) * 255;
@@ -100,17 +101,17 @@ function CreateMapCanvas() {
 
     //Create canvas imagedata and draw the map on it
     console.log("Drawing the image...");
-    var mapCanvas = document.getElementById("mapPicture");
-    var mapContext = mapCanvas.getContext("2d");
+    let mapCanvas = document.getElementById("mapPicture");
+    let mapContext = mapCanvas.getContext("2d");
 
     document.getElementById("mapPicture").width = canvasWidth;
     document.getElementById("mapPicture").height = canvasHeight;
     var mapData = mapContext.createImageData(canvasWidth, canvasHeight);
 
-    var colorR = 0;
-    var colorG = 0;
-    var colorB = mapArray;
-    var colorA = 255;
+    let colorR = 0;
+    let colorG = 0;
+    let colorB = mapArray;
+    let colorA = 255;
 
     for (let i = 0; i < mapArray.length; i++) {
         let n = i * 4;
@@ -122,20 +123,9 @@ function CreateMapCanvas() {
     console.log("Done.");
 
 
-    //Draw to canvas
+    //Draw imagedata to canvas
     mapContext.putImageData(mapData, 0, 0);
 }
-
-
-//Print to console for debugging
-function PrintIt() {
-    for (let i = 0; i < mapArray.length; i++) {
-    console.log(mapArray[i]);
-    }
-    console.log(canvasWidth + canvasHeight);
-    console.log(noDataValue.toString());
-}
-
 
 //Min/max functions for more data than Math.max/min can handle
 //Taken from: 
