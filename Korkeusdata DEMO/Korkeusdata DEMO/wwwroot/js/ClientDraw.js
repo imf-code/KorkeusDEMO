@@ -7,21 +7,27 @@ var canvasWidth = null;
 var canvasHeight = null;
 var noDataValue = null
 
+//Initial entry point, up to file being read
 function OnSubmit() {
-    ReadTheForm();
     ReadSettings();
+    ReadTheForm();
 }
 
-/*
-function ColorTheMap() {
-    ParseTheData();
-    CreateMapCanvas();
+//After the file is read
+function AfterFileIsRead() {
+    try {
+        ParseTheData();
+        CreateMapCanvas();
+    }
+    catch (err) {
+        console.error(err)
+        return;
+    }
 }
-*/
 
 function ReadSettings() {
 
-    //Read settings from index
+    //Read settings from HTML input
     let readColoringSettings = document.getElementsByName("coloring");
     for (let i = 0; i < readColoringSettings.length; i++) {
         if (readColoringSettings[i].checked) {
@@ -36,7 +42,7 @@ function ReadTheForm() {
     console.log("Reading the file...");
     let filePath = document.getElementById('mapFile').value;
     if (!filePath.endsWith(".asc")) {
-        console.log("Error opening the file: Invalid file extension, .asc expected.");
+        console.error("Error opening the file: Invalid file extension, .asc expected.");
         return;
     }
 
@@ -45,11 +51,10 @@ function ReadTheForm() {
     reader.onload = () => {
         dataString = event.target.result;
         console.log("Done.");
-        //ColorTheMap();
-        ParseTheData();
+        AfterFileIsRead();
     }
     reader.onerror = () => {
-        console.log("Error opening the file: Cannot read file.");
+        console.error("Error opening the file: Cannot read file.");
         return;
     }
     reader.readAsText(file);
@@ -57,22 +62,25 @@ function ReadTheForm() {
 
 function ParseTheData() {
 
-    //Read necessary metadata from the string, error if not able or metadata not found
+    let parseError = new Error ("Error reading the data: Metadata not found.");
+
+    //Read necessary metadata from the string, error if not found
     try {
         console.log("Reading metadata...");
         canvasWidth = dataString.match(/(?<=^ncols\s*)\d+/);
         if (canvasWidth == null) {
-            console.log("Error reading the data: Unknown format.");
+            //throw ("Error reading the data: Unknown format.");
+            throw parseError;
             return;
         }
         canvasHeight = dataString.match(/(?<=nrows\s*)\d+/);
         if (canvasHeight == null) {
-            console.log("Error reading the data: Unknown format.");
+            throw parseError;
             return;
         }
         noDataValue = dataString.match(/(?<=NODATA_value\s*)-?\d*\.\d+/);
         if (noDataValue == null) {
-            console.log("Error reading the data: Unknown format.");
+            throw parseError;
             return;
         }
 
@@ -83,7 +91,7 @@ function ParseTheData() {
         console.log("Done.");
     }
     catch (err) {
-        console.log("Error parsing the data.");
+        throw (err);
         return;
     }
 
@@ -94,7 +102,7 @@ function ParseTheData() {
     console.log("Done.");
 
     if (elevationData.length != canvasHeight * canvasWidth) {
-        console.log("Error: Unexpected map size.");
+        throw ("Error: Unexpected map size.");
         return;
     }
 
@@ -104,8 +112,6 @@ function ParseTheData() {
         arr[index] = parseFloat(item);
     });
     console.log("Done.");
-
-    CreateMapCanvas();
 }
 
 function CreateMapCanvas() {
