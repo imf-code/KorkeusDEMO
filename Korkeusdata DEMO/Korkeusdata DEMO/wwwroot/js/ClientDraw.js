@@ -2,18 +2,18 @@
 
 var dataString = null;
 var elevationData = null;
-var colorSetting = null;
+var colorSettings = null;
 var canvasWidth = null;
 var canvasHeight = null;
 var noDataValue = null
 
-//Initial entry point, up to file being read
+//Initial entry point
 function OnSubmit() {
     ReadSettings();
     ReadTheForm();
 }
 
-//After the file is read
+//Next
 function AfterFileIsRead() {
     try {
         ParseTheData();
@@ -27,11 +27,11 @@ function AfterFileIsRead() {
 
 function ReadSettings() {
 
-    //Read settings from HTML input
+    //Read settings from HTML input form
     let readColoringSettings = document.getElementsByName("coloring");
     for (let i = 0; i < readColoringSettings.length; i++) {
         if (readColoringSettings[i].checked) {
-            colorSetting = readColoringSettings[i].value;
+            colorSettings = readColoringSettings[i].value;
         }
     }
 }
@@ -62,14 +62,13 @@ function ReadTheForm() {
 
 function ParseTheData() {
 
-    let parseError = new Error ("Error reading the data: Metadata not found.");
+    let parseError = "Error reading the data: Metadata not found.";
 
     //Read necessary metadata from the string, error if not found
     try {
         console.log("Reading metadata...");
         canvasWidth = dataString.match(/(?<=^ncols\s*)\d+/);
         if (canvasWidth == null) {
-            //throw ("Error reading the data: Unknown format.");
             throw parseError;
             return;
         }
@@ -84,7 +83,7 @@ function ParseTheData() {
             return;
         }
 
-        //Separate elevation data from metadata, only numbers should remain
+        //Separate elevation data from metadata, only numbers should remain in the string
         let findTheMatrixRegex = new RegExp("(?<=" + noDataValue.toString() + "\\s*)-?\\d+");
         let indexOfMatrix = dataString.search(findTheMatrixRegex);
         elevationData = dataString.slice(indexOfMatrix);
@@ -97,7 +96,7 @@ function ParseTheData() {
 
     //Turn into an array, check if array size matches metadata
     console.log("Converting to array...");
-    elevationData = elevationData.replace(/\x0D?\x0A/g, "");
+    elevationData = elevationData.replace(/\r?\n/g, "");
     elevationData = elevationData.split(" ");
     console.log("Done.");
 
@@ -106,10 +105,15 @@ function ParseTheData() {
         return;
     }
 
-   //Convert to float
+   //Convert to float, change NODATA values to NaN
     console.log("Converting to float...");
+    elevationData = elevationData.map(parseFloat);
+
+    noDataValue = parseFloat(noDataValue);
     elevationData.forEach((item, index, arr) => {
-        arr[index] = parseFloat(item);
+        if (arr[index] == noDataValue) {
+            arr[index] = NaN;
+        }
     });
     console.log("Done.");
 }
@@ -122,13 +126,7 @@ function CreateMapCanvas() {
     let maxValue = getMax(elevationData);
     let mapRange = maxValue - minValue;
 
-    elevationData.forEach((item, index, arr) => {
-        arr[index] = ((item - minValue) / mapRange) * 255;
-    });
-
-    elevationData.forEach((item, index, arr) => {
-        arr[index] = Math.round(item);
-    });
+    elevationData = elevationData.map(item => Math.round(((item - minValue) / mapRange) * 255));
     console.log("Done.");
 
     //Create canvas imagedata and draw the map on it
@@ -140,11 +138,37 @@ function CreateMapCanvas() {
     document.getElementById("mapPicture").height = canvasHeight;
     var mapImageData = mapContext.createImageData(canvasWidth, canvasHeight);
 
-    var colorR = 0;
-    var colorG = 0;
-    var colorB = 0;
-    var colorA = 255;
+    //Read settings
+    let colorAlpha = 255;
+    let defaultColorValue = 0;
 
+    let upperHalf = 1;
+    let lowerHalf = 2;
+    let noData = 0;
+    let colorDivider = Math.round(((0 - minValue) / mapRange) * 255);
+
+    /*
+    console.log("Set to 0");
+    for (let i = 0; i < mapImageData.data.length; i++) {
+        let n = i * 4;
+        mapImageData.data[n] = defaultColorValue;
+        mapImageData.data[n + 1] = defaultColorValue;
+        mapImageData.data[n + 2] = defaultColorValue;
+        mapImageData.data[n + 3] = defaultColorValue;
+    }
+    */
+
+    //Set values to imagedata
+    console.log("Set values");
+    for (let i = 0; i < mapImageData.data.length; i++) {
+        let n = i * 4;
+        mapImageData.data[n + noData] = isNaN(elevationData[i]) ? 255 : 0; //Is it faster to check for bool AND condition or just the condition??
+        mapImageData.data[n + upperHalf] = elevationData[i] > colorDivider ? elevationData[i] : defaultColorValue;
+        mapImageData.data[n + lowerHalf] = elevationData[i] <= colorDivider ? elevationData[i] : defaultColorValue;
+        mapImageData.data[n + 3] = colorAlpha;
+    }
+
+    /*
     var waterLevel = null;
     if (minValue < 0) {
         waterLevel = ((0 - minValue) / mapRange) * 255;
@@ -153,7 +177,7 @@ function CreateMapCanvas() {
         return;
     }
 
-    switch (colorSetting) {
+    switch (colorSettings) {
         case "blue":
             colorB = elevationData;
             break;
@@ -172,8 +196,10 @@ function CreateMapCanvas() {
         mapImageData.data[n] = colorR === 0 ? colorR : elevationData[i];
         mapImageData.data[n + 1] = colorG === 0 ? colorG : elevationData[i];
         mapImageData.data[n + 2] = colorB === 0 ? colorG : elevationData[i];
-        mapImageData.data[n + 3] = colorA;
+        mapImageData.data[n + 3] = colorAlpha;
     }
+    */
+
     console.log("Done.");
 
     //Draw imagedata to canvas
