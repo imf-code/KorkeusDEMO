@@ -15,10 +15,22 @@
     <br /><br />
     Avaa korkeusdata kovalevyltä (.asc -tiedosto).
     <input type="file" id="mapFile" />
-    <br /><br />
-    <input type="radio" name="coloring" value="blue" checked="checked"/> Yksivärinen sininen<br />
-    <input type="radio" name="coloring" value="redAndBlue" /> Merenpinnan alapuoleiset punaisella<br />
     <br />
-    <input type="button" onclick="OnSubmit()" value="Piirrä kartta" />
+    Kartan väritys:
+    <br />
+    <input type="button" id="colorToggle" onclick="setMonocolor()" value="Kaksivärinen" />
+    <br />
+    Pääväri<br />
+    <input type="radio" name="coloringUpper" value="red" /> Punainen<br />
+    <input type="radio" name="coloringUpper" value="green" /> Vihreä<br />
+    <input type="radio" name="coloringUpper" value="blue" checked="checked" /> Sininen<br />
+    <div id="lowerColorSettings" style="display:none;">
+    Toinen väri<br />
+    <input type="radio" name="coloringLower" value="red" /> Punainen<br />
+    <input type="radio" name="coloringLower" value="green" /> Vihreä<br />
+    <input type="radio" name="coloringLower" value="blue" checked="checked" /> Sininen<br />
+    </div>
+    <br />
+    <input type="button" id="submitButton" onclick="OnSubmit()" value="Piirrä kartta" />
     <br />
 </p>
