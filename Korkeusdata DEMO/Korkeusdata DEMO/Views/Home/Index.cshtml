@@ -2,7 +2,11 @@
     ViewData["Title"] = "Korkeus DEMO";
 }
 
-<script src="~/js/ClientDraw.js"></script>
+<script src="~/js/clientdraw/main.js"></script>
+<script src="~/js/clientdraw/variables.js"></script>
+<script src="~/js/clientdraw/forms.js"></script>
+<script src="~/js/clientdraw/openfile.js"></script>
+<script src="~/js/clientdraw/coloring.js"></script>
 
 <h1></h1>
 
@@ -24,13 +28,18 @@
     <input type="radio" name="coloringUpper" value="red" /> Punainen<br />
     <input type="radio" name="coloringUpper" value="green" /> Vihreä<br />
     <input type="radio" name="coloringUpper" value="blue" checked="checked" /> Sininen<br />
+    
     <div id="lowerColorSettings" style="display:none;">
-    Toinen väri<br />
-    <input type="radio" name="coloringLower" value="red" /> Punainen<br />
-    <input type="radio" name="coloringLower" value="green" /> Vihreä<br />
-    <input type="radio" name="coloringLower" value="blue" checked="checked" /> Sininen<br />
+        Toinen väri<br />
+        <input type="radio" name="coloringLower" value="red" /> Punainen<br />
+        <input type="radio" name="coloringLower" value="green" /> Vihreä<br />
+        <input type="radio" name="coloringLower" value="blue" checked="checked" /> Sininen<br />
+        Veden korkeus m/mpy:<br />
+        <input type="number" id="waterLevel" value="0" /><br />
     </div>
+    
     <br />
     <input type="button" id="submitButton" onclick="OnSubmit()" value="Piirrä kartta" />
+    <input type="button" id="refreshButton" onclick="RefreshMap()" disabled value="Päivitä kartta" />
     <br />
 </p>

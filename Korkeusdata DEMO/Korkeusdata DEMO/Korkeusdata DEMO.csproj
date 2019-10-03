@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\clientdraw\forms.js~RF9be2cc.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\js\ClientDraw.js" />
   </ItemGroup>
 

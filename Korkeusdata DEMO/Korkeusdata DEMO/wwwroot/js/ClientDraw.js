@@ -14,6 +14,7 @@ var isMonoColor = true;
 var canvasWidth = null;
 var canvasHeight = null;
 var noDataValue = null;
+var isNoData = false;
 
 
 //Initial entry point
@@ -155,6 +156,10 @@ function ParseTheData() {
 
     noDataValue = parseFloat(noDataValue);
     elevationData.forEach((_item, index, arr) => {
+        if (arr[index] == NaN) {
+            throw "Error handling the data: File may be corrupt.";
+            return;
+        }
         if (arr[index] == noDataValue) {
             arr[index] = NaN;
         }
@@ -186,7 +191,7 @@ function CreateMapCanvas() {
     //Set default values for colors
     let colorAlpha = 255;
     let defaultColorValue = 0;
-    let colorDivider = Math.round(((10 - minValue) / mapRange) * 255);
+    let colorDivider = Math.round(((0 - minValue) / mapRange) * 255);
 
     //Set main color
     switch (colorSettingsMain) {
