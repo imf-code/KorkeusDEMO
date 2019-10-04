@@ -1,6 +1,6 @@
 ﻿// Turning elevation values into RGB values
 
-/** Calculate RGB values */
+/** Calculate RGB values, in coloring.js */
 function CalculateRGBValues() {
     // Calculate RGB values based on the max range of elevations
     console.log("Calculating RGB values...")
@@ -12,7 +12,7 @@ function CalculateRGBValues() {
     console.log("Done.");
 }
 
-/** Create canvas imagedata and draw the map onto it */
+/** Create canvas imagedata and draw the map on it, in coloring.js */
 function DrawMap() {
 
     // Create canvas imagedata
@@ -51,7 +51,7 @@ function DrawMap() {
     console.log("Done");
 }
 
-/** Set RGB color coding for drawing the map */
+/** Set RGB color coding for drawing the map, in coloring.js */
 function ParseColorSettings() {
     // Set color divider
     colorDivider = Math.round(((waterLevel - minValue) / mapRange) * 255);

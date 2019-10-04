@@ -1,6 +1,6 @@
 ﻿// Global variables
 
-// Elevation data
+// For holding the elevation data
 var dataString = null;
 var elevationData = null;
 var elevationColorData = null;
@@ -11,22 +11,21 @@ var colorSettingsSecond = null;
 var monoColor = true;
 var isMonoColor = true;
 var waterLevel = 0;
+var colorDivider = null;
 
 // Metadata from the file
 var canvasWidth = null;
 var canvasHeight = null;
 var noDataValue = null;
-var isNoData = false;
 
-// Elevation values
+// Values from elevation data
 var minValue = null;
 var maxValue = null;
 var mapRange = null;
 
 // RGB settings
-var colorDivider = null;
-var colorAlpha = 255;
 var defaultRGBValue = 0;
 var mainColor = null;
 var secondColor = null;
 var noData = null;
+var colorAlpha = 255;

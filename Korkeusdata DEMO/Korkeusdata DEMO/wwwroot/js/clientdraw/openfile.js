@@ -1,6 +1,6 @@
 ﻿// Reading and initial handling of elevation data from .asc file
 
-/** Open user file and read it as text */
+/** Open user file and read it as text, in openfile.js */
 function ReadTheForm() {
 
     // Confirm file extension and read the data as text
@@ -25,7 +25,7 @@ function ReadTheForm() {
     reader.readAsText(file);
 }
 
-/** Read metadata and convert to a float array */
+/** Read metadata and convert to a float array, in openfile.js */
 function ParseTheData() {
 
     // Read necessary metadata from the string, error if not found

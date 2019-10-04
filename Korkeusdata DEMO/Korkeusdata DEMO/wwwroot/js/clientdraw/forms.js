@@ -1,6 +1,6 @@
-﻿// Read html forms and/or add functionality to them
+﻿// Read html forms and/or add functionality
 
-/** Read settings from html form */
+/** Read settings from html form, in forms.js */
 function ReadSettings() {
     //Save mono/multi color setting for later use
     isMonoColor = monoColor;
@@ -24,7 +24,7 @@ function ReadSettings() {
     waterLevel = document.getElementById("waterLevel").value;
 }
 
-/** Functionality for color mode toggle -button */
+/** Functionality for color mode toggle button, in forms.js */
 function setMonocolor() {
     let button = document.getElementById("colorToggle");
     let colorElement = document.getElementById("lowerColorSettings");
@@ -41,7 +41,7 @@ function setMonocolor() {
     }
 }
 
-/** Functionality for refresh map -button*/
+/** Functionality for refresh map button, in forms.js*/
 function RefreshMap() {
     try {
         ReadSettings();
