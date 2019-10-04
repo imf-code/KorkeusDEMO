@@ -1,29 +1,106 @@
-//Draws a picture from height data, client side only
+//Draws a picture from numerical elevation data, client side only
 
-var dataString = "";
-var mapArray = null;
-var canvasWidth = 0;
-var canvasHeight = 0;
+//The data itself
+var dataString = null;
+var elevationData = null;
+
+//Settings
+var colorSettingsMain = null;
+var colorSettingsSecond = null;
+var monoColor = true;
+var isMonoColor = true;
+
+//Metadata
+var canvasWidth = null;
+var canvasHeight = null;
 var noDataValue = null;
+var isNoData = false;
+
+
+//Initial entry point
+function OnSubmit() {
+    document.getElementById("submitButton").disabled = true;
+    try {
+        ReadSettings();
+        ReadTheForm();
+    }
+    catch (err) {
+        document.getElementById("submitButton").disabled = false;
+        console.error(err);
+    }
+}
+
+//After data has been read to memory
+function AfterFileIsRead() {
+    try {
+        ParseTheData();
+        CreateMapCanvas();
+    }
+    catch (err) {
+        document.getElementById("submitButton").disabled = false;
+        console.error(err)
+    }
+    document.getElementById("submitButton").disabled = false;
+}
+
+//Functionality for color mode toggle button
+function setMonocolor() {
+    let button = document.getElementById("colorToggle");
+    let colorElement = document.getElementById("lowerColorSettings");
+
+    monoColor = monoColor ? false : true;
+
+    if (monoColor) {
+        colorElement.style.display = "none";
+        button.value = "Kaksiv\u00E4rinen";
+    }
+    else {
+        colorElement.style.display = "block";
+        button.value = "Yksiv\u00E4rinen";
+    }
+}
+
+function ReadSettings() {
+
+    //Read settings from HTML input form
+
+    //Color settings
+    isMonoColor = monoColor;
+
+    let readColoringSettings = document.getElementsByName("coloringUpper");
+    for (let i = 0; i < readColoringSettings.length; i++) {
+        if (readColoringSettings[i].checked) {
+            colorSettingsMain = readColoringSettings[i].value;
+        }
+    }
+
+    let readColoringSettings2 = document.getElementsByName("coloringLower");
+    for (let i = 0; i < readColoringSettings.length; i++) {
+        if (readColoringSettings2[i].checked) {
+            colorSettingsSecond = readColoringSettings[i].value;
+        }
+    }
+}
 
 function ReadTheForm() {
 
-    //Confirm file extension and read form data to string
+    //Confirm file extension and read the data as text
     console.log("Reading the file...");
     let filePath = document.getElementById('mapFile').value;
     if (!filePath.endsWith(".asc")) {
-        console.log("Error opening the file: Invalid file extension, .asc expected.");
+        throw "Error opening the file: Invalid file extension, .asc expected.";
         return;
     }
+
     let file = document.getElementById('mapFile').files[0];
     let reader = new FileReader();
     reader.onload = () => {
         dataString = event.target.result;
         console.log("Done.");
-        ParseTheData();
+        AfterFileIsRead();
     }
     reader.onerror = () => {
-        console.log("Error opening the file: Cannot read file.");
+        throw "Error opening the file: Cannot read file.";
         return;
     }
     reader.readAsText(file);
@@ -31,113 +108,170 @@ function ReadTheForm() {
 
 function ParseTheData() {
 
-    //Read necessary metadata from the string data, error if not able or not found
+    //Read necessary metadata from the string, error if not found
+    let parseError = "Error reading the data: Metadata not found.";
     try {
         console.log("Reading metadata...");
-        canvasWidth = dataString.match(/(?<=ncols\s*)\d+/);
+        canvasWidth = dataString.match(/(?<=^ncols\s*)\d+/);
         if (canvasWidth == null) {
-            console.log("Error reading the data: Unknown format.");
+            throw parseError;
             return;
         }
         canvasHeight = dataString.match(/(?<=nrows\s*)\d+/);
         if (canvasHeight == null) {
-            console.log("Error reading the data: Unknown format.");
+            throw parseError;
             return;
         }
         noDataValue = dataString.match(/(?<=NODATA_value\s*)-?\d*\.\d+/);
         if (noDataValue == null) {
-            console.log("Error reading the data: Unknown format.");
+            throw parseError;
             return;
         }
+
+        //Separate elevation data from metadata, only numbers and spaces should remain afterwards
         let findTheMatrixRegex = new RegExp("(?<=" + noDataValue.toString() + "\\s*)-?\\d+");
         let indexOfMatrix = dataString.search(findTheMatrixRegex);
-        var numberMatrixOnly = dataString.slice(indexOfMatrix);
+        elevationData = dataString.slice(indexOfMatrix);
         console.log("Done.");
     }
     catch (err) {
-        console.log("Error parsing the string: Not a valid file format?");
+        throw (err);
         return;
     }
 
-    //Turn into an array, check if array is correct size
+    //Turn into an array, check if array size matches metadata
     console.log("Converting to array...");
-    numberMatrixOnly = numberMatrixOnly.replace(/\x0D?\x0A/g, "");
-    mapArray = numberMatrixOnly.split(" ");
+    elevationData = elevationData.replace(/\r?\n/g, "");
+    elevationData = elevationData.split(" ");
     console.log("Done.");
 
-    if (mapArray.length != canvasHeight * canvasWidth) {
-        console.log("Error: Unexpected map size.");
+    if (elevationData.length != canvasHeight * canvasWidth) {
+        throw ("Error: Unexpected map size.");
         return;
     }
 
-    //Convert to float
+    //Convert to float, change NODATA values to NaN
     console.log("Converting to float...");
-    mapArray.forEach((item, index, arr) => {
-        arr[index] = parseFloat(item);
+    elevationData = elevationData.map(parseFloat);
+
+    noDataValue = parseFloat(noDataValue);
+    elevationData.forEach((_item, index, arr) => {
+        if (arr[index] == NaN) {
+            throw "Error handling the data: File may be corrupt.";
+            return;
+        }
+        if (arr[index] == noDataValue) {
+            arr[index] = NaN;
+        }
     });
     console.log("Done.");
-
-    CreateMapCanvas();
 }
 
 function CreateMapCanvas() {
 
-    //Calculate RGB values
+    //Calculate RGB values based on the max range of elevations
     console.log("Calculating RGB values...")
-    var minValue = getMin(mapArray);
-    var maxValue = getMax(mapArray);
-    var mapRange = maxValue - minValue;
+    let minValue = getMin(elevationData);
+    let maxValue = getMax(elevationData);
+    let mapRange = maxValue - minValue;
 
-    mapArray.forEach((item, index, arr) => {
-        arr[index] = ((item - minValue) / mapRange) * 255;
-    });
-   
-    mapArray.forEach((item, index, arr) => {
-        arr[index] = Math.round(item);
-    });
+    elevationData = elevationData.map(item => Math.round(((item - minValue) / mapRange) * 255));
     console.log("Done.");
-    
 
-    //Create canvas imagedata and draw the map on it
+    //Create canvas imagedata
     console.log("Drawing the image...");
-    var mapCanvas = document.getElementById("mapPicture");
-    var mapContext = mapCanvas.getContext("2d");
+    let mapCanvas = document.getElementById("mapPicture");
+    let mapContext = mapCanvas.getContext("2d");
 
     document.getElementById("mapPicture").width = canvasWidth;
     document.getElementById("mapPicture").height = canvasHeight;
-    var mapData = mapContext.createImageData(canvasWidth, canvasHeight);
+    var mapImageData = mapContext.createImageData(canvasWidth, canvasHeight);
 
-    var colorR = 0;
-    var colorG = 0;
-    var colorB = mapArray;
-    var colorA = 255;
+    //Parse through color settings
+    //Set default values for colors
+    let colorAlpha = 255;
+    let defaultColorValue = 0;
+    let colorDivider = Math.round(((0 - minValue) / mapRange) * 255);
 
-    for (let i = 0; i < mapArray.length; i++) {
-        let n = i * 4;
-        mapData.data[n] = colorR;
-        mapData.data[n + 1] = colorG;
-        mapData.data[n + 2] = colorB[i];
-        mapData.data[n + 3] = colorA;
+    //Set main color
+    switch (colorSettingsMain) {
+        case "red":
+            var mainColor = 0;
+            var unusedColor = 1;
+            var noData = 2;
+            break;
+        case "green":
+            var mainColor = 1;
+            var unusedColor = 2;
+            var noData = 0;
+            break;
+        case "blue":
+            var mainColor = 2;
+            var unusedColor = 1;
+            var noData = 0;
+            break;
+        default:
+            throw "Error with color settings: Main color not set.";
+            break;
+    }
+
+    //Two colored map
+    if (!(isMonoColor || colorSettingsMain == colorSettingsSecond)) {
+        switch (colorSettingsSecond) {
+            case "red":
+                var secondColor = 0;
+                break;
+            case "green":
+                var secondColor = 1;
+                break;
+            case "blue":
+                var secondColor = 2;
+                break;
+            default:
+                throw "Error with color settings: Second color not set.";
+                break;
+        }
+
+        //Set NODATA value
+        if (!(mainColor == 0 || secondColor == 0)) {
+            var noData = 0;
+        }
+        else if (!(mainColor == 1 && secondColor == 1)) {
+            var noData = 1;
+        }
+        else if (!(mainColor == 2 && secondColor == 2)) {
+            var noData = 2;
+        }
+        else {
+            throw "Error with color settings: Couldn't set color for NODATA.";
+        }
+
+        //Put values into imagedata, two different colors
+        for (let i = 0; i < mapImageData.data.length; i++) {
+            let n = i * 4;
+            mapImageData.data[n + noData] = isNaN(elevationData[i]) ? 255 : 0; //Is it faster to check for bool AND condition or just the condition??
+            mapImageData.data[n + mainColor] = elevationData[i] > colorDivider ? elevationData[i] : defaultColorValue;
+            mapImageData.data[n + secondColor] = elevationData[i] <= colorDivider ? elevationData[i] : defaultColorValue;
+            mapImageData.data[n + 3] = colorAlpha;
+        }
+    }
+    else {
+        //Put values into imagedata, single color
+        for (let i = 0; i < mapImageData.data.length; i++) {
+            let n = i * 4;
+            mapImageData.data[n + noData] = isNaN(elevationData[i]) ? 255 : defaultColorValue; //Is it faster to check for bool AND condition or just the condition??
+            mapImageData.data[n + mainColor] = elevationData[i];
+            mapImageData.data[n + unusedColor] = defaultColorValue;
+            mapImageData.data[n + 3] = colorAlpha;
+        }
     }
     console.log("Done.");
 
-
-    //Draw to canvas
-    mapContext.putImageData(mapData, 0, 0);
+    //Draw imagedata to canvas
+    mapContext.putImageData(mapImageData, 0, 0); 
 }
 
-
-//Print to console for debugging
-function PrintIt() {
-    for (let i = 0; i < mapArray.length; i++) {
-    console.log(mapArray[i]);
-    }
-    console.log(canvasWidth + canvasHeight);
-    console.log(noDataValue.toString());
-}
-
-
-//Min/max functions for more data than Math.max/min can handle
+//Min/max functions for more data than Math.max/min can handle, used in CreateMapCanvas()
 //Taken from: 
 //https://stackoverflow.com/questions/42623071/maximum-call-stack-size-exceeded-with-math-min-and-math-max
 function getMax(arr) {

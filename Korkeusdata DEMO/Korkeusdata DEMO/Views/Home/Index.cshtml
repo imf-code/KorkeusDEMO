@@ -2,7 +2,11 @@
     ViewData["Title"] = "Korkeus DEMO";
 }
 
-<script src="~/js/ClientDraw.js"></script>
+<script src="~/js/clientdraw/main.js"></script>
+<script src="~/js/clientdraw/variables.js"></script>
+<script src="~/js/clientdraw/forms.js"></script>
+<script src="~/js/clientdraw/openfile.js"></script>
+<script src="~/js/clientdraw/coloring.js"></script>
 
 <h1></h1>
 
@@ -11,9 +15,31 @@
 <p id="loadFileFromHDD">
     Kokeilua varten sopivan tiedoston voi ladata <a href="https://drive.google.com/open?id=1NEDHwa4FT27VzYHhrSQeiCt0eli4hdzc">tästä</a>.
     <br />
+    Ajamisessa saattaa kestää jonkin aikaa koneen tehoista riippuen. Edistyminen kirjataan konsoliin.
+    <br /><br />
     Avaa korkeusdata kovalevyltä (.asc -tiedosto).
     <input type="file" id="mapFile" />
-    <br /><br />
-    <input type="button" onclick="ReadTheForm()" value="Submit" />
+    <br />
+    Kartan väritys:
+    <br />
+    <input type="button" id="colorToggle" onclick="setMonocolor()" value="Kaksivärinen" />
+    <br />
+    Pääväri<br />
+    <input type="radio" name="coloringUpper" value="red" /> Punainen<br />
+    <input type="radio" name="coloringUpper" value="green" /> Vihreä<br />
+    <input type="radio" name="coloringUpper" value="blue" checked="checked" /> Sininen<br />
+    
+    <div id="lowerColorSettings" style="display:none;">
+        Toinen väri<br />
+        <input type="radio" name="coloringLower" value="red" /> Punainen<br />
+        <input type="radio" name="coloringLower" value="green" /> Vihreä<br />
+        <input type="radio" name="coloringLower" value="blue" checked="checked" /> Sininen<br />
+        Veden korkeus m/mpy:<br />
+        <input type="number" id="waterLevel" value="0" /><br />
+    </div>
+    
+    <br />
+    <input type="button" id="submitButton" onclick="OnSubmit()" value="Piirrä kartta" />
+    <input type="button" id="refreshButton" onclick="RefreshMap()" disabled value="Päivitä kartta" />
     <br />
 </p>
