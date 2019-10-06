@@ -2,6 +2,7 @@
 
 /** Calculate RGB values, in coloring.js */
 function CalculateRGBValues() {
+
     // Calculate RGB values based on the max range of elevations
     console.log("Calculating RGB values...")
     minValue = getMin(elevationData);
@@ -53,6 +54,7 @@ function DrawMap() {
 
 /** Set RGB color coding for drawing the map, in coloring.js */
 function ParseColorSettings() {
+
     // Set color divider
     colorDivider = Math.round(((waterLevel - minValue) / mapRange) * 255);
 
