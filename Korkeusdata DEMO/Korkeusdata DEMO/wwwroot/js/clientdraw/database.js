@@ -38,8 +38,8 @@ function WriteToDb() {
     };
 
     console.log("POSTing...");
-    //fetch('LINKKI', metaPost);
-    //fetch('LINKKI', dataPost);
+    fetch('https://localhost:44315/api/Map/', metaPost);
+    fetch('https://localhost:44315/api/Map/', dataPost);
     console.log("Done.");
     
 }
