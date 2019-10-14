@@ -9,8 +9,8 @@ function WriteToDb() {
     let id = filePath.slice(12, 17);
     let metaJSON = {
         MapId: id,
-        Width: canvasWidth,
-        Height: canvasHeight,
+        Width: parseInt(canvasWidth),
+        Height: parseInt(canvasHeight),
         NodataValue: noDataValue
     };
     let dataJSON = {
@@ -20,6 +20,8 @@ function WriteToDb() {
 
     metaJSON = JSON.stringify(metaJSON);
     dataJSON = JSON.stringify(dataJSON);
+    console.log(metaJSON);
+    console.log(dataJSON);
 
     // Settings for POSTing
     const metaPost = {
@@ -38,8 +40,7 @@ function WriteToDb() {
     };
 
     console.log("POSTing...");
-    fetch('https://localhost:44315/api/Map/', metaPost);
-    fetch('https://localhost:44315/api/Map/', dataPost);
+    fetch('https://localhost:44315/api/Map/Meta/', metaPost);
+    fetch('https://localhost:44315/api/Map/Data/', dataPost);
     console.log("Done.");
-    
 }

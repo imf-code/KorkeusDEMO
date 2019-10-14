@@ -14,15 +14,27 @@ namespace Korkeusdata_DEMO.Controllers
     public class MapController : ControllerBase
     {
         [HttpPost]
-        [Route("")]
-        public void HandlePost([FromBody] dbControls inJSON)
+        [Route("Meta")]
+        public void HandleMetaPost([FromBody] Meta metaInJSON)
+        {
+            using (ElevationDataContext context = new ElevationDataContext())
+            {
+                context.Meta.Add(metaInJSON);
+                context.SaveChanges();
+                return;
+            }
+        }
+
+        [HttpPost]
+        [Route("Data")]
+        public void HandleDataPost([FromBody] dbControls dataInJSON)
         {
             using (ElevationDataContext context = new ElevationDataContext())
             {
 
                 Data dataContext = new Data();
-                dataContext.MapId = inJSON.MapId;
-                dataContext.MapData = inJSON.BinaryString();
+                dataContext.MapId = dataInJSON.MapId;
+                dataContext.MapData = dataInJSON.BinaryString();
                 context.Data.Add(dataContext);
                 context.SaveChanges();
                 return;
@@ -30,7 +42,7 @@ namespace Korkeusdata_DEMO.Controllers
         }
 
         [HttpGet]
-        [Route("Testi/{id}")]
+        [Route("/{id}")]
         public dbControls HandleGet(string id)
         {
             dbControls palautusJSON = new dbControls();
