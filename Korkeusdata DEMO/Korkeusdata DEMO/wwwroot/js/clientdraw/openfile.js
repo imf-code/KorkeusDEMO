@@ -5,7 +5,7 @@ function ReadTheForm() {
 
     // Confirm file extension and read the data as text
     console.log("Reading the file...");
-    let filePath = document.getElementById('mapFile').value;
+    filePath = document.getElementById('mapFile').value;
     if (!filePath.endsWith(".asc")) {
         throw "Error opening the file: Invalid file extension, .asc expected.";
         return;
@@ -16,7 +16,14 @@ function ReadTheForm() {
     reader.onload = () => {
         dataString = event.target.result;
         console.log("Done.");
-        AfterFileIsRead();
+
+        if (uploadToDb) {
+            uploadToDb = false;
+            WriteToDb();
+        }
+        else {
+            AfterFileIsRead();
+        }
     }
     reader.onerror = () => {
         throw "Error opening the file: Cannot read file.";

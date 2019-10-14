@@ -41,7 +41,7 @@ function setMonocolor() {
     }
 }
 
-/** Functionality for refresh map button, in forms.js*/
+/** Functionality for refresh map button, in forms.js */
 function RefreshMap() {
     try {
         ReadSettings();
@@ -51,4 +51,10 @@ function RefreshMap() {
     catch (err) {
         console.error(err)
     }
+}
+
+/** Button for adding map data to database, in forms.js */
+function DbAddButton() {
+    uploadToDb = true;
+    OnSubmit();
 }

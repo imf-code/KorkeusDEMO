@@ -12,11 +12,13 @@ var monoColor = true;
 var isMonoColor = true;
 var waterLevel = 0;
 var colorDivider = 0;
+var uploadToDb = false;
 
 // Metadata from the file
 var canvasWidth = 0;
 var canvasHeight = 0;
 var noDataValue = null;
+var filePath = "";
 
 // Values from elevation data
 var minValue = 0;
