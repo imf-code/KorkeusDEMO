@@ -26,6 +26,5 @@ function AfterFileIsRead() {
         document.getElementById("submitButton").disabled = false;
         console.error(err)
     }
-    document.getElementById("refreshButton").disabled = false;
     document.getElementById("submitButton").disabled = false;
 }

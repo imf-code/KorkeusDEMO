@@ -27,14 +27,23 @@ namespace Korkeusdata_DEMO.dbAPI
                 }
             }
         }
+    }
 
-        public void GetValues(string id)
+    public class GetJSON
+    {
+        public int? Width { get; set; }
+        public int? Height { get; set; }
+        public double? NodataValue { get; set; }
+        public List<float> MapData { get; set; }
+
+        public GetJSON GetValues(string id)
         {
             using (ElevationDataContext context = new ElevationDataContext())
             {
-
-                Data evContext = (from m in context.Data where m.MapId == id select m).FirstOrDefault();
-                Stream mapStream = new MemoryStream(evContext.MapData);
+                GetJSON dataJSON = new GetJSON();
+                Data dataContext = (from m in context.Data where m.MapId == id select m).FirstOrDefault();
+                Meta metaContext = (from m in context.Meta where m.MapId == id select m).FirstOrDefault();
+                Stream mapStream = new MemoryStream(dataContext.MapData);
                 using (BinaryReader br = new BinaryReader(mapStream))
                 {
                     List<float> floatMap = new List<float>();
@@ -42,9 +51,11 @@ namespace Korkeusdata_DEMO.dbAPI
                     {
                         floatMap.Add(br.ReadSingle());
                     }
-                    MapData = floatMap;
+                    dataJSON.MapData = floatMap;
                 }
-                MapId = evContext.MapId;
+                dataJSON.Width = metaContext.Width;
+                dataJSON.Height = metaContext.Height;
+                return dataJSON;
             }
         }
     }

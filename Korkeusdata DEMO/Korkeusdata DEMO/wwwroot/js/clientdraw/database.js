@@ -1,6 +1,6 @@
 ﻿// Database interaction through API
 
-/** Writing map to db */
+/** POST map to db API */
 function WriteToDb() {
     ParseTheData();
 
@@ -38,9 +38,36 @@ function WriteToDb() {
             'Content-Type': 'application/json'
         },
     };
+    console.log("Done.");
 
     console.log("POSTing...");
     fetch('https://localhost:44315/api/Map/Meta/', metaPost);
     fetch('https://localhost:44315/api/Map/Data/', dataPost);
     console.log("Done.");
+}
+
+/** GET data from db API */
+async function ReadFromDb() {
+    // Setting for GET
+    const JSONGet = {
+        method: 'GET'
+    }
+
+    let dbId = document.getElementById("mapId").value;
+
+    console.log("Fetching data...");
+    // Async fetch
+    let fetchPromise = await fetch("https://localhost:44315/api/Map/" + dbId, JSONGet);
+    let fetchJSON = await fetchPromise.json();
+
+    // Set metadata
+    elevationData = fetchJSON.mapData;
+    canvasHeight = fetchJSON.height;
+    canvasWidth = fetchJSON.width;
+    noDataValue = fetchJSON.noDataValue;
+    console.log("Done.");
+
+    // Draw map
+    CalculateRGBValues();
+    RefreshMap();
 }

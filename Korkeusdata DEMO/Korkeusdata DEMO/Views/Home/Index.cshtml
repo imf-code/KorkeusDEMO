@@ -41,8 +41,12 @@
     
     <br />
     <input type="button" id="submitButton" onclick="OnSubmit()" value="Piirrä kartta" />
-    <input type="button" id="refreshButton" onclick="RefreshMap()" disabled value="Päivitä kartta" />
+    <input type="button" id="refreshButton" onclick="RefreshMap()" value="Päivitä kartta" />
     <br />
+    <br /><br />
+    <input type="text" id="mapId" value="L3324" />
+    <br />
+    <input type="button" id="downloadButton" onclick="ReadFromDb()" value="Lue kartta tietokannasta" />
     <br /><br />
     <input type="button" id="uploadButton" onclick="DbAddButton()" value="Lisää kartta tietokantaan" />
 </p>

@@ -42,12 +42,12 @@ namespace Korkeusdata_DEMO.Controllers
         }
 
         [HttpGet]
-        [Route("/{id}")]
-        public dbControls HandleGet(string id)
+        [Route("{id}")]
+        public GetJSON HandleGet(string id)
         {
-            dbControls palautusJSON = new dbControls();
-            palautusJSON.GetValues(id);
-            return palautusJSON;
+            GetJSON dataContext = new GetJSON();
+            GetJSON dataJSON = dataContext.GetValues(id);
+            return dataJSON;
         }
     }
 }
