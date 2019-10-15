@@ -1,4 +1,6 @@
-﻿using Korkeusdata_DEMO.Models;
+﻿// Additional classes for handling API calls, used by MapController.cs
+
+using Korkeusdata_DEMO.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,11 +9,13 @@ using System.Threading.Tasks;
 
 namespace Korkeusdata_DEMO.dbAPI
 {
+    // Class for converting API POST to database entry
     public class dbControls
     {
         public string MapId { get; set; }
         public List<float> MapData { get; set; }
 
+        // Float array from POST into byte array for writing in db
         public byte[] BinaryString()
         {
             using (MemoryStream ms = new MemoryStream())
@@ -29,6 +33,7 @@ namespace Korkeusdata_DEMO.dbAPI
         }
     }
 
+    // Class for converting database entry to proper form GET JSON
     public class GetJSON
     {
         public int? Width { get; set; }
@@ -36,6 +41,7 @@ namespace Korkeusdata_DEMO.dbAPI
         public double? NodataValue { get; set; }
         public List<float> MapData { get; set; }
 
+        // Byte array into float List; construct JSON out of Metadata and map data
         public GetJSON GetValues(string id)
         {
             using (ElevationDataContext context = new ElevationDataContext())

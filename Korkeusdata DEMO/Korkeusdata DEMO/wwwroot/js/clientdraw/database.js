@@ -58,9 +58,20 @@ async function ReadFromDb() {
     console.log("Fetching data...");
     // Async fetch
     let fetchPromise = await fetch("https://localhost:44315/api/Map/" + dbId, JSONGet);
+    console.log("Done.");
+
+    // Parse JSON into js object
+    console.log("Parsing JSON...");
+    let p1 = performance.now();
+    console.log(p1);
     let fetchJSON = await fetchPromise.json();
+    let p2 = performance.now();
+    console.log(p2);
+    console.log(p2-p1);
+    console.log("Done.");
 
     // Set metadata
+    console.log("Reading data...");
     elevationData = fetchJSON.mapData;
     canvasHeight = fetchJSON.height;
     canvasWidth = fetchJSON.width;

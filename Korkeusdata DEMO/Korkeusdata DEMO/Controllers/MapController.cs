@@ -13,6 +13,7 @@ namespace Korkeusdata_DEMO.Controllers
     [ApiController]
     public class MapController : ControllerBase
     {
+        // POST, metadata JSON into new db entry
         [HttpPost]
         [Route("Meta")]
         public void HandleMetaPost([FromBody] Meta metaInJSON)
@@ -25,6 +26,7 @@ namespace Korkeusdata_DEMO.Controllers
             }
         }
 
+        // POST, map data JSON into new db entry
         [HttpPost]
         [Route("Data")]
         public void HandleDataPost([FromBody] dbControls dataInJSON)
@@ -41,6 +43,7 @@ namespace Korkeusdata_DEMO.Controllers
             }
         }
 
+        // GET, both meta and map data in JSON
         [HttpGet]
         [Route("{id}")]
         public GetJSON HandleGet(string id)

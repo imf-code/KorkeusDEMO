@@ -68,6 +68,8 @@ function ParseTheData() {
 
     // Turn into an array, check if array size matches metadata
     console.log("Converting to array...");
+    let p1 = performance.now();
+    console.log(p1);
     elevationData = elevationData.replace(/\r?\n/g, "");
     elevationData = elevationData.split(" ");
     console.log("Done.");
@@ -83,13 +85,12 @@ function ParseTheData() {
 
     noDataValue = parseFloat(noDataValue);
     elevationData.forEach((_item, index, arr) => {
-        if (arr[index] == NaN) {
-            throw "Error handling the data: File may be corrupt.";
-            return;
-        }
         if (arr[index] == noDataValue) {
             arr[index] = NaN;
         }
     });
+    let p2 = performance.now();
+    console.log(p2);
+    console.log(p2 - p1);
     console.log("Done.");
 }
