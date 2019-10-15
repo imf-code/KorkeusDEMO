@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Korkeusdata_DEMO.dbAPI
 {
     // Class for converting API POST to database entry
-    public class dbControls
+    public class DbControls
     {
         public string MapId { get; set; }
         public List<float> MapData { get; set; }

@@ -20,8 +20,6 @@ function WriteToDb() {
 
     metaJSON = JSON.stringify(metaJSON);
     dataJSON = JSON.stringify(dataJSON);
-    console.log(metaJSON);
-    console.log(dataJSON);
 
     // Settings for POSTing
     const metaPost = {
@@ -40,6 +38,8 @@ function WriteToDb() {
     };
     console.log("Done.");
 
+
+    // POST
     console.log("POSTing...");
     fetch('https://localhost:44315/api/Map/Meta/', metaPost);
     fetch('https://localhost:44315/api/Map/Data/', dataPost);
@@ -53,10 +53,9 @@ async function ReadFromDb() {
         method: 'GET'
     }
 
-    let dbId = document.getElementById("mapId").value;
-
-    console.log("Fetching data...");
     // Async fetch
+    console.log("Fetching data...");
+    let dbId = document.getElementById("mapId").value;
     let fetchPromise = await fetch("https://localhost:44315/api/Map/" + dbId, JSONGet);
     console.log("Done.");
 

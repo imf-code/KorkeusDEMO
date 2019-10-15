@@ -29,7 +29,7 @@ namespace Korkeusdata_DEMO.Controllers
         // POST, map data JSON into new db entry
         [HttpPost]
         [Route("Data")]
-        public void HandleDataPost([FromBody] dbControls dataInJSON)
+        public void HandleDataPost([FromBody] DbControls dataInJSON)
         {
             using (ElevationDataContext context = new ElevationDataContext())
             {

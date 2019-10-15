@@ -20,12 +20,12 @@ var canvasHeight = 0;
 var noDataValue = null;
 var filePath = "";
 
-// Values from elevation data
+// Values from the elevation data
 var minValue = 0;
 var maxValue = 0;
 var mapRange = 0;
 
-// RGB settings
+// RGB settings, to be determined from user settings
 var defaultRGBValue = 0;
 var mainColor = 0;
 var secondColor = 0;
