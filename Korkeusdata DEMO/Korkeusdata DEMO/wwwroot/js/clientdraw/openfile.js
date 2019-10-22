@@ -1,7 +1,7 @@
 ﻿// Reading and initial handling of elevation data from .asc file
 
 /** Open user file and read it as text, in openfile.js */
-function ReadTheForm() {
+function ReadTheFile() {
 
     // Confirm file extension and read the data as text
     console.log("Reading the file...");
@@ -55,7 +55,7 @@ function ParseTheData() {
             return;
         }
 
-        // Separate elevation data from metadata, only numbers and spaces should remain afterwards
+        // Separate elevation data from metadata, only numbers should remain afterwards
         let findTheMatrixRegex = new RegExp("(?<=" + noDataValue.toString() + "\\s*)-?\\d+");
         let indexOfMatrix = dataString.search(findTheMatrixRegex);
         elevationData = dataString.slice(indexOfMatrix);

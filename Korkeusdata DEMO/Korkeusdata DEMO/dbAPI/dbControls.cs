@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Korkeusdata_DEMO.dbAPI
 {
-    // Class for converting API POST to database entry
+    // Class including the tools for converting API POST to database entry
     public class DbControls
     {
         public string MapId { get; set; }
@@ -33,7 +33,7 @@ namespace Korkeusdata_DEMO.dbAPI
         }
     }
 
-    // Class for converting database entry to proper form GET JSON
+    // Class including tools for converting database entry to proper form GET JSON
     public class GetJSON
     {
         public int? Width { get; set; }

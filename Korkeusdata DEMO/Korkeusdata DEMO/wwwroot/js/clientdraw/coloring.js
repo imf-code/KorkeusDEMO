@@ -52,7 +52,7 @@ function DrawMap() {
     console.log("Done");
 }
 
-/** Set RGB color coding for drawing the map, in coloring.js */
+/** Set colors based on user settings, in coloring.js */
 function ParseColorSettings() {
 
     // Set color divider

@@ -15,8 +15,8 @@ var colorDivider = 0;
 var uploadToDb = false;
 
 // Metadata from the file
-var canvasWidth = 0;
-var canvasHeight = 0;
+var canvasWidth = null;
+var canvasHeight = null;
 var noDataValue = null;
 var filePath = "";
 

@@ -5,7 +5,7 @@ function ReadSettings() {
     //Save mono/multi color setting for later use
     isMonoColor = monoColor;
 
-    // Color settings
+    // Save color settings
     let readColoringSettings = document.getElementsByName("coloringUpper");
     for (let i = 0; i < readColoringSettings.length; i++) {
         if (readColoringSettings[i].checked) {

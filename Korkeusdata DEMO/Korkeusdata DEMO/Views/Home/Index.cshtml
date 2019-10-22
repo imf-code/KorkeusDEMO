@@ -16,9 +16,11 @@
 <p id="loadFileFromHDD">
     Kokeilua varten sopivan tiedoston voi ladata <a href="https://drive.google.com/open?id=1NEDHwa4FT27VzYHhrSQeiCt0eli4hdzc">tästä</a>.
     <br />
-    Ajamisessa saattaa kestää jonkin aikaa koneen tehoista riippuen. Edistyminen kirjataan konsoliin.
+    Ajamisessa saattaa kestää jonkin aikaa koneen tehoista riippuen.
+    <br />
+    <b>Edistyminen kirjataan selaimen konsoliin.</b> (Paina F12 -> Console)
     <br /><br />
-    Avaa korkeusdata kovalevyltä (.asc -tiedosto).
+    Valitse korkeusdata kovalevyltä (.asc -tiedosto).
     <input type="file" id="mapFile" />
     <br />
     Kartan väritys:
@@ -43,10 +45,22 @@
     <input type="button" id="submitButton" onclick="OnSubmit()" value="Piirrä kartta" />
     <input type="button" id="refreshButton" onclick="RefreshMap()" value="Päivitä kartta" />
     <br />
-    <br /><br />
+    <br /><br /><br />
+    <b>
+    VAROITUS! 
+    <br />
+    Alla olevat tietokantatoiminnot ovat vasta kehitysvaiheessa. Ne ja niihin liittyvä koodi ovat mukana lähinnä vain näytillä.<br /> 
+    Ne toimivat, mutta vaativat oikean tyyppisen ja muotoisen tietokannan pyörimään taustalle localhostiin.<br />
+    Klikkaaminen todennäköisimmin kaataa ohjelman.<br />
+    </b>
+    <br />
+    Ladattavan kartan nimi:
+    <br />
     <input type="text" id="mapId" value="L3324" />
     <br />
     <input type="button" id="downloadButton" onclick="ReadFromDb()" value="Lue kartta tietokannasta" />
     <br /><br />
+    Valitse lisättävä korkeusdata "Valitse korkeusdata kovalevyltä" -kohdassa.
+    <br />
     <input type="button" id="uploadButton" onclick="DbAddButton()" value="Lisää kartta tietokantaan" />
 </p>

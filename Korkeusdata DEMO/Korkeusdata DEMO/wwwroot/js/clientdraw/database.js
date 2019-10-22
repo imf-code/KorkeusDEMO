@@ -6,7 +6,7 @@ function WriteToDb() {
 
     // Construct JSONs
     console.log("Initializing POST...");
-    let id = filePath.slice(12, 17);
+    let id = filePath.slice(12, 17);        // Fix this later
     let metaJSON = {
         MapId: id,
         Width: parseInt(canvasWidth),
