@@ -4,10 +4,10 @@ Web-sovellus numeerisen korkeusdatan visualisoimiseen.
 - [Pelkästään selaimen vaativa riisuttu versio](https://github.com/imf-code/KorkeusDEMOnoMVC)
 
 ### Kuvaus
-- Vaatii dotnet ympäristön toimiakseen. (Yllä linkki riisuttuun versioon.)
-- **Demo aukeaa indeksisivulle, jossa myös käyttöohjeet.**
 - Ohjelma avaa käyttäjän antaman, korkeusdataa sisältävän, .asc tiedoston kovalevyltä ja piirtää sen perusteella karttakuvan.
 - Ohjelmalla on mahdollista värittää kartta myös kahadella eri värillä, käyttäjän määrittämän korkeuden perusteella.
+- Vaatii dotnet ympäristön toimiakseen. (Yllä linkki riisuttuun versioon.)
+- **Demo aukeaa indeksisivulle, jossa myös käyttöohjeet.**
 - Sisältää myös keskeneräisen tietokantaominaisuuden, jonka perusominasuudet toimivat, mutta joka vaatii valmiin tietokannan.
 
 ### Korkeusdata
