@@ -1,6 +1,6 @@
 # KorkeusDEMO
 Web-sovellus numeerisen korkeusdatan visualisoimiseen.
-- [Reactilla toteutettu versio](https://github.com/imf-code/KorkeusREACT) (Tämän hetkinen kehitysprojekti)
+- [Reactilla toteutettu versio](https://github.com/imf-code/KorkeusREACT) (Viimeisin projekti)
 - [Prototyyppi C++ versiosta](https://github.com/imf-code/KorkeusCPP)
 - [Pelkästään selaimen vaativa riisuttu versio](https://github.com/imf-code/KorkeusDEMOnoMVC)
 
